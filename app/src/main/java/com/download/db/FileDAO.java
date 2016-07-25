@@ -11,7 +11,7 @@ public interface FileDAO {
     /**
      * 插入文件信息
      *
-     * @param fileInfo 线程信息
+     * @param fileInfo 文件信息
      */
     void insertFile(FileInfo fileInfo);
 
