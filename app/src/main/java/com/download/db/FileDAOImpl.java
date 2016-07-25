@@ -34,7 +34,7 @@ public class FileDAOImpl implements FileDAO {
 
     @Override
     public synchronized void insertFile(FileInfo fileInfo) {
-        Log.i(TAG, "insertThread");
+        Log.i(TAG, "insertFile");
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.execSQL("insert into file_info(file_id,url,name,length,finish) values(?,?,?,?,?)",
                 new Object[]{fileInfo.getId(), fileInfo.getUrl(), fileInfo.getFileName(), fileInfo.getLength(), fileInfo.getFinish()});
@@ -43,7 +43,7 @@ public class FileDAOImpl implements FileDAO {
 
     @Override
     public synchronized void deleteFile(String url) {
-        Log.e(TAG, "deleteThread");
+        Log.e(TAG, "deleteFile");
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.execSQL("delete from file_info where url = ?", new Object[]{url});
         db.close();

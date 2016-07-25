@@ -32,7 +32,6 @@ public interface ThreadDAO {
      */
     void updateThread(String url, int thread_id, long finished);
 
-
     /**
      * 查询文件的线程信息
      *
@@ -40,7 +39,6 @@ public interface ThreadDAO {
      * @return 信息
      */
     List<ThreadInfo> getThread(String url);
-
 
     /**
      * 判断是否存在
