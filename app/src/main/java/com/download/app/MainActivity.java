@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Context context;
@@ -156,29 +157,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //                            String videoTitle = videopath.substring(videopath.lastIndexOf('/') + 1);//URL中的视频名称
                             String videoExtension = videopath.substring(videopath.lastIndexOf('.'));//URL中的视频后缀名
+                            UUID uuid = UUID.randomUUID();//生成随机文件名
 
                             List<FileInfo> fileInfos = mFileDAO.getFile(videopath);
                             if (fileInfos.size() == 0) {
                                 //创建文件信息对象
-                                fileInfo = new FileInfo(i, videopath, title + videoExtension, 0, 0);
+                                fileInfo = new FileInfo(i, videopath, uuid + videoExtension, 0, 0);
                                 fileInfoList.add(fileInfo);
                             } else {
                                 File file = new File(Environment.getExternalStorageDirectory().getPath() + "/MirrorClient/cache/ss-cache/" + fileInfos.get(0).getFileName());
                                 if (!file.exists()) {
                                     mFileDAO.deleteFile(videopath);
-                                    fileInfo = new FileInfo(i, videopath, title + videoExtension, 0, 0);
+                                    fileInfo = new FileInfo(i, videopath, uuid + videoExtension, 0, 0);
                                     fileInfoList.add(fileInfo);
                                 }
                             }
-
-                            //创建适配器
-                            mAdapter = new FileListAdapter(MainActivity.this, fileInfoList);
-                            //给listView设置适配器
-                            lvFile.setAdapter(mAdapter);
-
-//                            startDown();
                         }
 
+                        //创建适配器
+                        mAdapter = new FileListAdapter(MainActivity.this, fileInfoList);
+                        //给listView设置适配器
+                        lvFile.setAdapter(mAdapter);
+
+//                        if (fileInfoList.size() > 0) {
+//                            startDown();
+//                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
