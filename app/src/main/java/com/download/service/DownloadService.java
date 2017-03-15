@@ -28,7 +28,7 @@ public class DownloadService extends Service {
     //更新UI
     public static final String ACTION_UPDATE = "ACTION_UPDATE";
     //下载路径
-    public static final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MirrorClient/cache/ss-cache/";
+    public static final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/";
     //初始化
     private static final int MSG_INIT = 0;
     //下载任务集合
@@ -112,7 +112,7 @@ public class DownloadService extends Service {
                 }
                 File dir = new File(DOWNLOAD_PATH);
                 if (!dir.exists()) {
-                    dir.mkdir();
+                    dir.mkdirs();
                 }
                 //在本地创建文件
                 File file = new File(dir, tFileInfo.getFileName());

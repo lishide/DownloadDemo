@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.download.MyApplication;
 import com.download.entity.ThreadInfo;
-import com.download.utils.MyApplication;
 
 import java.util.ArrayList;
 import java.util.List;

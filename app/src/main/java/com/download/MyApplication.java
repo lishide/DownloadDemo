@@ -1,4 +1,9 @@
-package com.download.utils;
+package com.download;
+
+import android.app.Application;
+import android.os.Environment;
+import android.text.format.DateFormat;
+import android.util.Log;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,19 +15,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import android.app.Application;
-import android.os.Environment;
-import android.text.format.DateFormat;
-import android.util.Log;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-
 public class MyApplication extends Application {
     private static MyApplication instance;
     private static final String TAG_stack = "ActivityStack";
-
-    public static RequestQueue queue;
 
     public static MyApplication getInstance() {
         return instance;
@@ -32,15 +27,10 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        queue = Volley.newRequestQueue(getApplicationContext());
 
         UEHandler ueHandler = new UEHandler();
         Thread.setDefaultUncaughtExceptionHandler(ueHandler);
 
-    }
-
-    public static RequestQueue getQueue() {
-        return queue;
     }
 
     private class UEHandler implements UncaughtExceptionHandler {
@@ -84,7 +74,7 @@ public class MyApplication extends Application {
             CharSequence timestamp = DateFormat.format("yyyyMMdd_HHmmss_", System.currentTimeMillis()) + "" + (System.currentTimeMillis() % 1000);
 
             try {
-                String filename = Environment.getExternalStorageDirectory().getPath() + File.separator + "MirrorClient" + File.separator
+                String filename = Environment.getExternalStorageDirectory().getPath() + File.separator + "Download" + File.separator
                         + "Log" + File.separator;
                 File dirFile = new File(filename);
                 if (!dirFile.exists()) {

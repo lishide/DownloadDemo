@@ -48,7 +48,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SQL_DROP);
         db.execSQL(SQL_CREATE);
+
         db.execSQL(SQL_DROP_FILE);
-        db.execSQL(SQL_DROP_FILE);
+        db.execSQL(SQL_CREATE_FILE);
     }
 }

@@ -1,33 +1,27 @@
 package com.download.app;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.download.adapter.FileListAdapter;
 import com.download.db.FileDAO;
 import com.download.db.FileDAOImpl;
 import com.download.entity.FileInfo;
 import com.download.service.DownloadService;
-import com.download.utils.ConstUtils;
-import com.download.utils.MyApplication;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.PermissionListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,12 +33,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ListView lvFile;
     private List<FileInfo> fileInfoList = null;
     private FileListAdapter mAdapter;
-    private String token = "812bdb066ef79f02a0545a39ac13e606";
-    private String advPosition = "12";
     private Button btStart;
     private Button btStop;
     private FileDAO mFileDAO = null;
     private FileInfo fileInfo;
+    public static final String[] videoPaths = {"http://baobab.wdjcdn.com/14564977406580.mp4",
+            "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4",
+            "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +48,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         context = this;
         init();
         initRegister();
-        volleyGetAdvList();
+        if (AndPermission.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            mockData();
+        } else {
+            AndPermission.with(this)
+                    .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .requestCode(99)
+                    .send();
+        }
     }
 
     private void init() {
@@ -128,75 +130,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void volleyGetAdvList() {// 广告列表
-        String url = ConstUtils.BASE_URL + "adv/list/position/" + advPosition + "/token/" + token;
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.i("lsd", "AdvList response == " + response);
-                JSONObject jsonObject = null;
-                try {
-                    jsonObject = new JSONObject(response);
-                    int state = jsonObject.getInt("state");
-                    if (state == 1) {
-                        JSONObject data = jsonObject.getJSONObject("data");
-                        //屏保广告
-                        JSONArray pos_12 = data.getJSONArray("pos_12");
-                        for (int i = 0; i < pos_12.length(); i++) {
-                            JSONObject jsonItem = pos_12.getJSONObject(i);
-
-                            int id = jsonItem.getInt("id");
-                            String title = jsonItem.getString("title");
-                            String type = jsonItem.getString("type");
-                            String position = jsonItem.getString("position");
-                            String text = jsonItem.getString("text");
-                            String videopath = jsonItem.getString("videopath");
-                            String picpath = jsonItem.getString("picpath");
-                            String timelength = jsonItem.getString("timelength");
-                            String clickable = jsonItem.getString("clickable");
-
-//                            String videoTitle = videopath.substring(videopath.lastIndexOf('/') + 1);//URL中的视频名称
-                            String videoExtension = videopath.substring(videopath.lastIndexOf('.'));//URL中的视频后缀名
-                            UUID uuid = UUID.randomUUID();//生成随机文件名
-
-                            List<FileInfo> fileInfos = mFileDAO.getFile(videopath);
-                            if (fileInfos.size() == 0) {
-                                //创建文件信息对象
-                                fileInfo = new FileInfo(i, videopath, uuid + videoExtension, 0, 0);
-                                fileInfoList.add(fileInfo);
-                            } else {
-                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "/MirrorClient/cache/ss-cache/" + fileInfos.get(0).getFileName());
-                                if (!file.exists()) {
-                                    mFileDAO.deleteFile(videopath);
-                                    fileInfo = new FileInfo(i, videopath, uuid + videoExtension, 0, 0);
-                                    fileInfoList.add(fileInfo);
-                                }
-                            }
-                        }
-
-                        //创建适配器
-                        mAdapter = new FileListAdapter(MainActivity.this, fileInfoList);
-                        //给listView设置适配器
-                        lvFile.setAdapter(mAdapter);
-
-//                        if (fileInfoList.size() > 0) {
-//                            startDown();
-//                        }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AndPermission.onRequestPermissionsResult(requestCode, permissions, grantResults,
+                new PermissionListener() {
+                    @Override
+                    public void onSucceed(int requestCode, List<String> grantPermissions) {
+                        mockData();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    @Override
+                    public void onFailed(int requestCode, List<String> deniedPermissions) {
+                    }
+                });
+    }
+
+    private void mockData() {
+        for (int i = 0; i < videoPaths.length; i++) {
+            String videopath = videoPaths[i];
+//            String videoTitle = videopath.substring(videopath.lastIndexOf('/') + 1);//URL中的视频名称
+            String videoExtension = videopath.substring(videopath.lastIndexOf('.'));//URL中的视频后缀名
+            UUID uuid = UUID.randomUUID();//生成随机文件名
+
+            List<FileInfo> fileInfos = mFileDAO.getFile(videopath);
+            if (fileInfos.size() == 0) {
+                //创建文件信息对象
+                fileInfo = new FileInfo(i, videopath, uuid + videoExtension, 0, 0);
+                fileInfoList.add(fileInfo);
+            } else {
+                File file = new File(Environment.getExternalStorageDirectory().getPath() + "/Download/" + fileInfos.get(0).getFileName());
+                if (!file.exists()) {
+                    mFileDAO.deleteFile(videopath);
+                    fileInfo = new FileInfo(i, videopath, uuid + videoExtension, 0, 0);
+                    fileInfoList.add(fileInfo);
                 }
-
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError arg0) {
-                Toast.makeText(context, "网络连接失败", Toast.LENGTH_LONG).show();
+        }
 
-            }
-        });
-        request.setTag("screenListGet");
-        MyApplication.getQueue().add(request);
+        //创建适配器
+        mAdapter = new FileListAdapter(MainActivity.this, fileInfoList);
+        //给listView设置适配器
+        lvFile.setAdapter(mAdapter);
+
+//        if (fileInfoList.size() > 0) {
+//            startDown();
+//        }
     }
 
     private void startDown() {
