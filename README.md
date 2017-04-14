@@ -1,9 +1,9 @@
 # DownloadDemo
 Android-Service之多线程断点续传下载
 ### Downloads
-[Demo](https://github.com/Ericlsd/DownloadDemo/raw/master/art/app-debug.apk)
+[Demo](https://github.com/lishide/DownloadDemo/raw/master/art/app-debug.apk)
 ### Screenshot
-![](https://github.com/Ericlsd/DownloadDemo/raw/master/art/Screenshot_2016-07-26-10-30-06.png "界面截图") 
+![](https://github.com/lishide/DownloadDemo/raw/master/art/Screenshot_2016-07-26-10-30-06.png "界面截图") 
 ### Thanks
 1. Android-Service系列之断点续传下载：[http://www.imooc.com/view/363](http://www.imooc.com/view/363)
 1. Android-Service系列之多线程断点续传下载：[http://www.imooc.com/view/376](http://www.imooc.com/view/376)
